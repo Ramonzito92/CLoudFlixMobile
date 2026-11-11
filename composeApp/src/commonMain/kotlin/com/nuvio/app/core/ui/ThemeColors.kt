@@ -1,194 +1,228 @@
 package com.nuvio.app.core.ui
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RippleConfiguration
+import androidx.compose.material3.Typography
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
+import nuvio.composeapp.generated.resources.Res
+import nuvio.composeapp.generated.resources.jetbrains_sans_bold
+import nuvio.composeapp.generated.resources.jetbrains_sans_regular
+import nuvio.composeapp.generated.resources.jetbrains_sans_semibold
+import org.jetbrains.compose.resources.Font
 
-data class ThemeColorPalette(
-    val secondary: Color,
-    val secondaryVariant: Color,
-    val accentGradient: List<Color> = listOf(secondary),
-    val nativeAccentHex: String,
-    val onSecondary: Color = Color.White,
-    val onSecondaryVariant: Color = Color.White,
-    val focusRing: Color,
-    val focusBackground: Color,
-    val background: Color = Color(0xFF0D0D0D),
-    val backgroundElevated: Color = Color(0xFF1A1A1A),
-    val backgroundCard: Color = Color(0xFF242424),
+val LocalAppTheme = staticCompositionLocalOf { AppTheme.WHITE }
+val LocalThemePalette = staticCompositionLocalOf { ThemeColors.White }
+
+val MaterialTheme.themePalette: ThemeColorPalette
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalThemePalette.current
+
+val MaterialTheme.appTheme: AppTheme
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalAppTheme.current
+
+private fun contentColorFor(background: Color): Color =
+    if (background.luminance() > 0.5f) Color(0xFF111111) else Color(0xFFF5F7F8)
+
+private fun buildColorScheme(palette: ThemeColorPalette, amoled: Boolean = false) = darkColorScheme(
+    primary = Color(0xFFA855F7), // Roxo Neon vibrante CloudFlix
+    onPrimary = Color.White,
+    primaryContainer = Color(0x33A855F7),
+    onPrimaryContainer = Color.White,
+    secondary = Color(0xFFC084FC),
+    onSecondary = Color.Black,
+    background = Color(0xFF090412), // Fundo Dark Slate profundo
+    onBackground = Color(0xFFF5F7F8),
+    surface = Color(0xFF140C24), // Cards e menus em tom roxo escuro
+    onSurface = Color(0xFFF5F7F8),
+    surfaceVariant = Color(0xFF1F1535),
+    onSurfaceVariant = Color(0xFFC084FC),
+    outline = Color(0xFF3B2D54),
+    error = Color(0xFFE36A8A),
+    onError = Color(0xFFFCE5EC),
 )
 
-object ThemeColors {
+private val JetBrainsSans: FontFamily
+    @Composable
+    get() = FontFamily(
+        Font(Res.font.jetbrains_sans_bold, FontWeight.Bold, FontStyle.Normal),
+        Font(Res.font.jetbrains_sans_semibold, FontWeight.SemiBold, FontStyle.Normal),
+        Font(Res.font.jetbrains_sans_regular, FontWeight.Normal, FontStyle.Normal),
+    )
 
-    val Gold = ThemeColorPalette(
-        secondary = Color(0xFFE8A91C),
-        secondaryVariant = Color(0xFF9A6200),
-        accentGradient = listOf(
-            Color(0xFF8A5700),
-            Color(0xFFE8A91C),
-            Color(0xFFFFF1A8),
-            Color(0xFFFFD45C),
-            Color(0xFF9A6200),
+private val NuvioTypography: Typography
+    @Composable
+    get() = Typography(
+        displayLarge = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.pageDisplay,
+            lineHeight = NuvioTokens.LineHeight.pageDisplay,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = NuvioTokens.LetterSpacing.pageDisplay,
         ),
-        nativeAccentHex = "#FFD45C",
-        onSecondary = Color(0xFF111111),
-        onSecondaryVariant = Color.White,
-        focusRing = Color(0xFFFFD45C),
-        focusBackground = Color(0xFF3D2D1A),
-        background = Color(0xFF0F0E0B),
-        backgroundElevated = Color(0xFF1D1A14),
-        backgroundCard = Color(0xFF262116),
+        headlineLarge = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.headline,
+            lineHeight = NuvioTokens.LineHeight.headline,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = NuvioTokens.LetterSpacing.headline,
+        ),
+        titleLarge = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.titleSm,
+            lineHeight = NuvioTokens.LineHeight.materialTitleLarge,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        titleMedium = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodyLg,
+            lineHeight = NuvioTokens.LineHeight.bodyMd,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        bodyLarge = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodyApp,
+            lineHeight = NuvioTokens.LineHeight.bodyApp,
+            fontWeight = FontWeight.Normal,
+        ),
+        bodyMedium = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodyMd,
+            lineHeight = NuvioTokens.LineHeight.bodyMd,
+            fontWeight = FontWeight.Normal,
+        ),
+        labelLarge = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodyMd,
+            lineHeight = NuvioTokens.LineHeight.bodySm,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        labelMedium = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.labelSm,
+            lineHeight = NuvioTokens.LineHeight.labelXs,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = NuvioTokens.LetterSpacing.label,
+        ),
     )
 
-    val Jade = ThemeColorPalette(
-        secondary = Color(0xFF22D37C),
-        secondaryVariant = Color(0xFF0BBF9A),
-        accentGradient = listOf(Color(0xFF7BF08D), Color(0xFF22D37C), Color(0xFF0BBF9A)),
-        nativeAccentHex = "#7BF08D",
-        onSecondary = Color(0xFF111111),
-        onSecondaryVariant = Color(0xFF111111),
-        focusRing = Color(0xFF7BF08D),
-        focusBackground = Color(0xFF153A2C),
-        background = Color(0xFF0B0F0D),
-        backgroundElevated = Color(0xFF141D18),
-        backgroundCard = Color(0xFF16251D),
+private val NuvioTypeTokens: NuvioTypeScale
+    @Composable
+    get() = NuvioTypeScale(
+        labelXs = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.labelXs,
+            lineHeight = NuvioTokens.LineHeight.labelXs,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        labelSm = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.labelSm,
+            lineHeight = NuvioTokens.LineHeight.labelSm,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        bodySm = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodySm,
+            lineHeight = NuvioTokens.LineHeight.bodySm,
+            fontWeight = FontWeight.Normal,
+        ),
+        bodyMd = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodyMd,
+            lineHeight = NuvioTokens.LineHeight.bodyMd,
+            fontWeight = FontWeight.Normal,
+        ),
+        bodyLg = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.bodyLg,
+            lineHeight = NuvioTokens.LineHeight.bodyLg,
+            fontWeight = FontWeight.Normal,
+        ),
+        titleSm = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.titleSm,
+            lineHeight = NuvioTokens.LineHeight.titleSm,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        titleMd = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.titleMd,
+            lineHeight = NuvioTokens.LineHeight.titleMd,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        titleLg = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.titleLg,
+            lineHeight = NuvioTokens.LineHeight.titleLg,
+            fontWeight = FontWeight.SemiBold,
+        ),
+        displaySm = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.displaySm,
+            lineHeight = NuvioTokens.LineHeight.displaySm,
+            fontWeight = FontWeight.Bold,
+        ),
+        displayMd = TextStyle(
+            fontFamily = JetBrainsSans,
+            fontSize = NuvioTokens.Type.displayMd,
+            lineHeight = NuvioTokens.LineHeight.displayMd,
+            fontWeight = FontWeight.Bold,
+        ),
     )
 
-    val RoseGold = ThemeColorPalette(
-        secondary = Color(0xFFEC70A9),
-        secondaryVariant = Color(0xFFB75AFF),
-        accentGradient = listOf(Color(0xFFB75AFF), Color(0xFFEC70A9), Color(0xFFFFB37A)),
-        nativeAccentHex = "#FFB37A",
-        onSecondary = Color(0xFF111111),
-        onSecondaryVariant = Color.White,
-        focusRing = Color(0xFFFFB37A),
-        focusBackground = Color(0xFF442037),
-        background = Color(0xFF100C0F),
-        backgroundElevated = Color(0xFF1F161D),
-        backgroundCard = Color(0xFF281A24),
-    )
+private val NuvioRippleConfiguration = RippleConfiguration(
+    color = Color.Black,
+)
 
-    val ArcticBlue = ThemeColorPalette(
-        secondary = Color(0xFF3185F5),
-        secondaryVariant = Color(0xFF4D55E8),
-        accentGradient = listOf(Color(0xFF4DE3FF), Color(0xFF3185F5), Color(0xFF4D55E8)),
-        nativeAccentHex = "#4DE3FF",
-        onSecondary = Color.White,
-        onSecondaryVariant = Color.White,
-        focusRing = Color(0xFF4DE3FF),
-        focusBackground = Color(0xFF172844),
-        background = Color(0xFF0B0E14),
-        backgroundElevated = Color(0xFF141A24),
-        backgroundCard = Color(0xFF161E2A),
-    )
+@Composable
+fun NuvioTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    appTheme: AppTheme = AppTheme.WHITE,
+    amoled: Boolean = false,
+    customThemeColors: CustomThemeColors = CustomThemeColors.Default,
+    content: @Composable () -> Unit,
+) {
+    val palette = remember(appTheme, customThemeColors) {
+        ThemeColors.getColorPalette(appTheme, customThemeColors)
+    }
+    val colorScheme = buildColorScheme(palette, amoled = amoled)
+    val tokens = defaultNuvioThemeTokens(palette, amoled = amoled, colorScheme = colorScheme)
 
-    val Graphite = ThemeColorPalette(
-        secondary = Color(0xFFAAB2BE),
-        secondaryVariant = Color(0xFF687381),
-        accentGradient = listOf(Color(0xFFF3F5F7), Color(0xFFAAB2BE), Color(0xFF687381)),
-        nativeAccentHex = "#F3F5F7",
-        onSecondary = Color(0xFF111111),
-        onSecondaryVariant = Color(0xFFFFFFFF),
-        focusRing = Color(0xFFF3F5F7),
-        focusBackground = Color(0xFF30343A),
-        background = Color(0xFF0C0D0F),
-        backgroundElevated = Color(0xFF17191D),
-        backgroundCard = Color(0xFF20242A),
-    )
-
-    val Crimson = ThemeColorPalette(
-        secondary = Color(0xFFE53935),
-        secondaryVariant = Color(0xFFC62828),
-        nativeAccentHex = "#E53935",
-        focusRing = Color(0xFFFF5252),
-        focusBackground = Color(0xFF3D1A1A),
-        background = Color(0xFF0D0D0D),
-        backgroundElevated = Color(0xFF1A1A1A),
-        backgroundCard = Color(0xFF241A1A),
-    )
-
-    val Ocean = ThemeColorPalette(
-        secondary = Color(0xFF1E88E5),
-        secondaryVariant = Color(0xFF1565C0),
-        nativeAccentHex = "#1E88E5",
-        focusRing = Color(0xFF42A5F5),
-        focusBackground = Color(0xFF1A2D3D),
-        background = Color(0xFF0D0D0F),
-        backgroundElevated = Color(0xFF1A1A1E),
-        backgroundCard = Color(0xFF1A1F24),
-    )
-
-    val Violet = ThemeColorPalette(
-        secondary = Color(0xFF8E24AA),
-        secondaryVariant = Color(0xFF6A1B9A),
-        nativeAccentHex = "#8E24AA",
-        focusRing = Color(0xFFAB47BC),
-        focusBackground = Color(0xFF2D1A3D),
-        background = Color(0xFF0D0D0F),
-        backgroundElevated = Color(0xFF1A1A1E),
-        backgroundCard = Color(0xFF1F1A24),
-    )
-
-    val Emerald = ThemeColorPalette(
-        secondary = Color(0xFF43A047),
-        secondaryVariant = Color(0xFF2E7D32),
-        nativeAccentHex = "#43A047",
-        focusRing = Color(0xFF66BB6A),
-        focusBackground = Color(0xFF1A3D1E),
-        background = Color(0xFF0D0D0D),
-        backgroundElevated = Color(0xFF1A1A1A),
-        backgroundCard = Color(0xFF1A241A),
-    )
-
-    val Amber = ThemeColorPalette(
-        secondary = Color(0xFFFB8C00),
-        secondaryVariant = Color(0xFFEF6C00),
-        nativeAccentHex = "#FB8C00",
-        focusRing = Color(0xFFFFA726),
-        focusBackground = Color(0xFF3D2D1A),
-        background = Color(0xFF0F0D0D),
-        backgroundElevated = Color(0xFF1E1A1A),
-        backgroundCard = Color(0xFF24201A),
-    )
-
-    val Rose = ThemeColorPalette(
-        secondary = Color(0xFFD81B60),
-        secondaryVariant = Color(0xFFC2185B),
-        nativeAccentHex = "#D81B60",
-        focusRing = Color(0xFFEC407A),
-        focusBackground = Color(0xFF3D1A2D),
-        background = Color(0xFF0D0D0D),
-        backgroundElevated = Color(0xFF1A1A1A),
-        backgroundCard = Color(0xFF241A1F),
-    )
-
-    val White = ThemeColorPalette(
-        secondary = Color(0xFFF5F5F5),
-        secondaryVariant = Color(0xFFE0E0E0),
-        nativeAccentHex = "#F5F5F5",
-        onSecondary = Color(0xFF111111),
-        onSecondaryVariant = Color(0xFF111111),
-        focusRing = Color(0xFFFFFFFF),
-        focusBackground = Color(0xFF303030),
-        background = Color(0xFF0D0D0D),
-        backgroundElevated = Color(0xFF1A1A1A),
-        backgroundCard = Color(0xFF222222),
-    )
-
-    fun getColorPalette(
-        theme: AppTheme,
-        customColors: CustomThemeColors = CustomThemeColors.Default,
-    ): ThemeColorPalette = when (theme) {
-        AppTheme.CUSTOM -> customColors.toColorPalette()
-        AppTheme.GOLD -> Gold
-        AppTheme.JADE -> Jade
-        AppTheme.ROSE_GOLD -> RoseGold
-        AppTheme.ARCTIC_BLUE -> ArcticBlue
-        AppTheme.GRAPHITE -> Graphite
-        AppTheme.CRIMSON -> Crimson
-        AppTheme.OCEAN -> Ocean
-        AppTheme.VIOLET -> Violet
-        AppTheme.EMERALD -> Emerald
-        AppTheme.AMBER -> Amber
-        AppTheme.ROSE -> Rose
-        AppTheme.WHITE -> White
+    val density = LocalDensity.current
+    CompositionLocalProvider(
+        LocalDensity provides Density(
+            density = density.density,
+            fontScale = 1f,
+        ),
+        LocalNuvioThemeTokens provides tokens,
+        LocalNuvioTypeScale provides NuvioTypeTokens,
+        LocalRippleConfiguration provides NuvioRippleConfiguration,
+        LocalAppTheme provides appTheme,
+        LocalThemePalette provides palette,
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = NuvioTypography,
+        ) {
+            SkeletonAnimationProvider(content = content)
+        }
     }
 }
