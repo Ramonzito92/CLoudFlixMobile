@@ -9,13 +9,21 @@ actual object CollectionStorage {
     private const val payloadKey = "collections_payload"
 
     private var preferences: SharedPreferences? = null
+    private var defaultAssetPayload: String? = null
 
     fun initialize(context: Context) {
         preferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
+        if (defaultAssetPayload == null) {
+            defaultAssetPayload = runCatching {
+                context.assets.open("default_collections.json").bufferedReader().use { it.readText() }
+            }.getOrNull()
+        }
     }
 
-    actual fun loadPayload(): String? =
-        preferences?.getString(ProfileScopedKey.of(payloadKey), null)
+    actual fun loadPayload(): String? {
+        val saved = preferences?.getString(ProfileScopedKey.of(payloadKey), null)
+        return if (saved.isNullOrBlank() || saved == "[]") defaultAssetPayload else saved
+    }
 
     actual fun savePayload(payload: String) {
         preferences
