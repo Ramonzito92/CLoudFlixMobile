@@ -2,7 +2,7 @@ package com.nuvio.app.features.tmdb
 
 data class TmdbSettings(
     val enabled: Boolean = true,
-    val apiKey: String = "COLE_SUA_CHAVE_DO_TMDB_AQUI",
+    val apiKey: String = "2bc5af27d4d4ec4a98bc0bb8249dfafc",
     val language: String = "pt-BR",
     val useTrailers: Boolean = true,
     val useArtwork: Boolean = true,
