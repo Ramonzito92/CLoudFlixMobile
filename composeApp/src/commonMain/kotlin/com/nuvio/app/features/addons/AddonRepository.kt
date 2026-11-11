@@ -48,6 +48,15 @@ private data class AddonPushItem(
 
 private const val ADDON_PUSH_DEBOUNCE_MS = 500L
 
+/**
+ * Links dos servidores de Addons que já vêm instalados de fábrica no CloudFlix!
+ * Adicione seus links de manifesto aqui (ex: Torrentio, Brazuca, AIOStreams, etc.)
+ */
+private val defaultPreinstalledAddonUrls = listOf(
+    "https://v3-cinemeta.strem.io/manifest.json",
+    "https://torrentio.strem.fun/manifest.json"
+)
+
 object AddonRepository {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val log = Logger.withTag("AddonRepository")
@@ -67,7 +76,15 @@ object AddonRepository {
         currentProfileId = effectiveProfileId
         log.d { "initialize() — loading local addons for profile $currentProfileId" }
 
-        val storedUrls = dedupeManifestUrls(AddonStorage.loadInstalledAddonUrls(currentProfileId))
+        val rawStored = AddonStorage.loadInstalledAddonUrls(currentProfileId)
+        val storedUrls = if (rawStored.isEmpty()) {
+            val defaults = dedupeManifestUrls(defaultPreinstalledAddonUrls)
+            AddonStorage.saveInstalledAddonUrls(currentProfileId, defaults)
+            defaults
+        } else {
+            dedupeManifestUrls(rawStored)
+        }
+
         val enabledByUrl = loadLocalEnabledStates()
         log.d { "initialize() — local addon count: ${storedUrls.size}" }
         if (storedUrls.isEmpty()) return
