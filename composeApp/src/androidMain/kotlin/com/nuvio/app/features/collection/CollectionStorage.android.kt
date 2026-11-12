@@ -1,34 +1,28 @@
-package com.nuvio.app.features.collection
+package com.nuvio.app.features.tmdb
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.nuvio.app.core.storage.ProfileScopedKey
-
-actual object CollectionStorage {
-    private const val preferencesName = "nuvio_collections"
-    private const val payloadKey = "collections_payload"
-
-    private var preferences: SharedPreferences? = null
-    private var defaultAssetPayload: String? = null
-
-    fun initialize(context: Context) {
-        preferences = context.getSharedPreferences(preferencesName, Context.MODE_PRIVATE)
-        if (defaultAssetPayload == null) {
-            defaultAssetPayload = runCatching {
-                context.assets.open("default_collections.json").bufferedReader().use { it.readText() }
-            }.getOrNull()
+data class TmdbSettings(
+    var enabled: Boolean = true,
+    var apiKey: String = "2bc5af27d4d4ec4a98bc0bb8249dfafc",
+    var language: String = "pt-BR",
+    val useTrailers: Boolean = true,
+    val useArtwork: Boolean = true,
+    val useBasicInfo: Boolean = true,
+    val useDetails: Boolean = true,
+    val useCredits: Boolean = true,
+    val useProductions: Boolean = true,
+    val useNetworks: Boolean = true,
+    val useEpisodes: Boolean = true,
+    val useSeasonPosters: Boolean = true,
+    val useMoreLikeThis: Boolean = true,
+    val useCollections: Boolean = true,
+) {
+    init {
+        if (apiKey.isBlank()) {
+            apiKey = "2bc5af27d4d4ec4a98bc0bb8249dfafc"
         }
-    }
-
-    actual fun loadPayload(): String? {
-        val saved = preferences?.getString(ProfileScopedKey.of(payloadKey), null)
-        return if (saved.isNullOrBlank() || saved == "[]") defaultAssetPayload else saved
-    }
-
-    actual fun savePayload(payload: String) {
-        preferences
-            ?.edit()
-            ?.putString(ProfileScopedKey.of(payloadKey), payload)
-            ?.apply()
+        enabled = true
+        if (language.isBlank() || language == "en") {
+            language = "pt-BR"
+        }
     }
 }
