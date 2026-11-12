@@ -160,9 +160,7 @@ ksFkTWeRpTWiwNAjrT0IM9/4OnY9AzgoAMXNVZtejaS7jaTLXFCYXC18dcU8+TwdYffkU+aySIFRZTmJ
 8asrZt7zdITdvKfMZRHzZiVFoGbdXWsIvoD79IEFh2AI3Nrp5EbFbDyS73Yk39QleTuf//qK2fpLusJu7zPGs4DFSxSJp+72eq4NUua+7wFHt/zaPgpEtZ3x
 7YoZfSLlbSjlbSJlbiP5AbC4KF9T+HhQFJjYIjUZWaY3meo7QyOzOPgT0kztatRasRERCncbC5f+nbz9F724Yq6/WD/YnX7WThYxa5Fj6VVjkK7SlXXQt2ut
 jtsFVZ5eDaW8jaWczHXmNVIoty8syld/nxTf801skdKNLBHYG4j+9/8D8CUQOrWpAgA=
-        """.trimIndent().replace("
-", "").replace("
-", "").trim()
+        """.trimIndent().replace("\n", "").replace("\r", "").trim()
         val compressedBytes = Base64.decode(b64, Base64.DEFAULT)
         GZIPInputStream(compressedBytes.inputStream()).bufferedReader(Charsets.UTF_8).use { it.readText() }
     }
